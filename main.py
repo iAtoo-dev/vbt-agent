@@ -108,7 +108,7 @@ Humeur client : {recap.client_mood}
     msg.set_content(body)
 
     try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        with smtplib.SMTP("smtp.hostinger.com", 465) as server:
             server.starttls()
             server.login(os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"))
             server.send_message(msg)
