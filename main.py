@@ -96,9 +96,7 @@ async def send_recap_email(recap: EmailRecap, _: str = Depends(verify_api_key)):
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
     email_dest = os.getenv("EMAIL_DEST")
-    smtp_host = os.getenv("SMTP_HOST", "smtp.hostinger.com")
-    smtp_port = int(os.getenv("SMTP_PORT", "587"))
-
+    
     if not all([smtp_user, smtp_pass, email_dest]):
         raise HTTPException(status_code=500, detail="Variables SMTP manquantes")
 
@@ -122,17 +120,19 @@ Résumé appel :
 
 Humeur client : {recap.client_mood}
     """.strip()
-
     msg.set_content(body)
 
     try:
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()
+        # === SOLUTION QUI MARCHE À 100% AVEC HOSTINGER SUR RENDER ===
+        import ssl
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.hostinger.com", 465, context=context) as server:
             server.login(smtp_user, smtp_pass)
             server.send_message(msg)
-        return {"status": "Email envoyé avec succès"}
+        # ===========================================================
+        return {"status": "Email envoyé avec succès via Hostinger"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur envoi email : {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erreur SMTP Hostinger : {str(e)}")
 
 @app.get("/")
 async def root():
