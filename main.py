@@ -60,16 +60,21 @@ async def lookup_plate(req: PlateRequest):
     energie = v.get("energy", {}).get("label", {}).get("fr", "Inconnue")
 
     # Extraction puissance (ex: "130 cv" → 130)
+    # Extraction puissance : on cherche le nombre juste avant "cv"
     puissance = "?"
-    for word in modele_complet.split():
-        if word.isdigit() and 40 <= int(word) <= 600:
-            puissance = word
-            break
-        if "cv" in word.lower():
-            try:
-                puissance = "".join(filter(str.isdigit, word))
-            except:
-                pass
+    words = modele_complet.lower().split()
+    for i, word in enumerate(words):
+        if "cv" in word and i > 0:
+            prev = words[i-1]
+            if prev.isdigit() and 40 <= int(prev) <= 600:
+                puissance = prev
+                break
+    # Fallback : si pas trouvé avant "cv", on prend le premier nombre plausible
+    if puissance == "?":
+        for word in words:
+            if word.isdigit() and 40 <= int(word) <= 600:
+                puissance = word
+                break
 
     return {
         "marque": marque,
