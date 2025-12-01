@@ -82,7 +82,7 @@ async def lookup_plate(req: PlateRequest):
 @app.post("/send_recap_email")
 async def send_recap_email(recap: EmailRecap):
     if not all([os.getenv("SMTP_USER"), os.getenv("SMTP_PASS"), os.getenv("EMAIL_DEST")]):
-        raise HTTPException 500, "Variables email manquantes"
+        raise HTTPException(status_code=500, detail="Variables email manquantes")
 
     msg = EmailMessage()
     msg["From"] = os.getenv("SMTP_USER")
