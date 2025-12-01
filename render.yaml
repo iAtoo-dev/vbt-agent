@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: vbt-agent
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      SMTP_USER:
+        fromDatabase: false
+        generateValue: true  # tu le renseignes dans le dashboard
+      SMTP_PASS:
+        fromDatabase: false
+        generateValue: true
+      EMAIL_DEST:
+        value: tonemail@gmail.com
