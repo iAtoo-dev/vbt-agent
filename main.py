@@ -123,17 +123,25 @@ Humeur client : {recap.client_mood}
     msg.set_content(body)
 
     try:
-        # === SOLUTION QUI MARCHE À 100% AVEC HOSTINGER SUR RENDER ===
+        # === PORT 465 + SSL DIRECT (paramètres officiels Hostinger 2025) ===
         import ssl
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.hostinger.com", 465, context=context) as server:
             server.login(smtp_user, smtp_pass)
             server.send_message(msg)
-        # ===========================================================
-        return {"status": "Email envoyé avec succès via Hostinger"}
+        return {"status": "Email envoyé avec succès via Hostinger (port 465 + SSL)"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erreur SMTP Hostinger : {str(e)}")
+        try:
+            # === FALLBACK : PORT 587 + STARTTLS (si 465 bloqué sur Render) ===
+            with smtplib.SMTP("smtp.hostinger.com", 587) as server:
+                context = ssl.create_default_context()
+                server.starttls(context=context)
+                server.login(smtp_user, smtp_pass)
+                server.send_message(msg)
+            return {"status": "Email envoyé avec succès via Hostinger (fallback port 587 + STARTTLS)"}
+        except Exception as e2:
+            raise HTTPException(status_code=500, detail=f"Erreur SMTP Hostinger (465/587) : {str(e)} | Fallback : {str(e2)}")
 
 @app.get("/")
 async def root():
-    return {"status": "VBT Dépannage API prête – clé API requise sur /lookup_plate et /send_recap_email", "docs": "/docs"}
+    return {"status": "VBT Dépannage API prête – clé API requise", "docs": "/docs"}
