@@ -97,7 +97,7 @@ async def send_recap_email(recap: EmailRecap, _: str = Depends(verify_api_key)):
     smtp_pass = os.getenv("SMTP_PASS")
     email_dest = os.getenv("EMAIL_DEST")
     smtp_host = os.getenv("SMTP_HOST", "smtp.hostinger.com")
-    smtp_port = int(os.getenv("SMTP_PORT", "465"))
+    smtp_port = int(os.getenv("SMTP_PORT", "587"))
 
     if not all([smtp_user, smtp_pass, email_dest]):
         raise HTTPException(status_code=500, detail="Variables SMTP manquantes")
