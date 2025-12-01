@@ -65,7 +65,7 @@ async def lookup_plate(req: PlateRequest):
         if word.isdigit() and 40 <= int(word) <= 600:
             puissance = word
             break
-        if "cv" in word, word.lower():
+        if "cv" in word.lower():
             try:
                 puissance = "".join(filter(str.isdigit, word))
             except:
