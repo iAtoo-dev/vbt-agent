@@ -6,7 +6,7 @@ from typing import Optional
 import requests
 import os
 from email.message import EmailMessage
-import smtplib
+import smtplib, ssl
 from oscaro_session import get_oscaro_session
 
 app = FastAPI(title="VBT Dépannage - Assistant Vocal Tools")
