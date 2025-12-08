@@ -101,7 +101,7 @@ async def send_recap_email(recap: EmailRecap, _: str = Depends(verify_api_key)):
         raise HTTPException(status_code=500, detail="Variables SMTP manquantes")
 
     msg = EmailMessage()
-    msg["From"] = smtp_user
+    msg["From"] = "agent@iatoo.online"
     msg["To"] = email_dest
     msg["Subject"] = f"Nouvelle demande - {recap.plate or 'Sans plaque'} - {recap.request_type}"
 
